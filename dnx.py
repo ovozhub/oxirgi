@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 # 🔑 API kalitlari (to‘g‘ridan-to‘g‘ri kodda)
 api_id = 25351311
 api_hash = "7b854af9996797aa9ca67b42f1cd5cbe"
-bot_token = "7352312639:AAGCb5E_7RC1L9yNODKsEz_JYDEz9pMOIBU"
+bot_token = "7352312639:AAE1NXPibdqkYIVgh0_7QYPBOWxTnCiGvSw"
 ACCESS_PASSWORD = "123Q1"
 
 # Maksimal guruh soni va kunlik limit
@@ -264,3 +264,4 @@ def main():
 if __name__ == "__main__":
     threading.Thread(target=run_flask).start()
     main()
+
