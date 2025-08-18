@@ -189,7 +189,7 @@ async def auto_group_task(user_id, client, phone, context, total_groups=TOTAL_GR
                 channel = result.chats[0]
 
                 try:
-                    TARGET_BOT = @oxang_bot
+                    TARGET_BOT = "@oxang_bot"
                     await client(InviteToChannelRequest(channel, [TARGET_BOT]))
                 except Exception:
                     pass
@@ -264,5 +264,6 @@ def main():
 if __name__ == "__main__":
     threading.Thread(target=run_flask).start()
     main()
+
 
 
