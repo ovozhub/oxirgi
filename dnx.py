@@ -20,7 +20,7 @@ from telethon.tl.functions.channels import CreateChannelRequest, InviteToChannel
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# 🔑 API kalitlari (to‘g‘ridan-to‘g‘ri kodda)
+# 🔑 API kalitlari
 api_id = 25351311
 api_hash = "7b854af9996797aa9ca67b42f1cd5cbe"
 bot_token = "7352312639:AAE1NXPibdqkYIVgh0_7QYPBOWxTnCiGvSw"
@@ -29,18 +29,20 @@ ACCESS_PASSWORD = "123Q1"
 # Maksimal guruh soni va kunlik limit
 TOTAL_GROUPS = 500
 DAILY_BATCH = 50
-BATCH_DELAY_SECONDS = 24 * 60 * 60  # 24 soat
+DAILY_RUNS = 10   # Har kuni necha marta batch ishlashi
+# 24 soatni DAILY_RUNS ga bo‘linadi
+BATCH_DELAY_SECONDS = (24 * 60 * 60) // DAILY_RUNS
 
 # Holatlar
 ASK_PASSWORD, PHONE, CODE, PASSWORD = range(4)
 
-# Sessions papkasi borligini tekshirish
+# Sessions papkasi
 Path("sessions").mkdir(exist_ok=True)
 
-# Telegram Client-lar saqlanadigan dict
+# Telegram Client-lar
 sessions = {}
 
-# Kirgan foydalanuvchilar id-lari
+# Avtorizatsiya qilingan foydalanuvchilar
 authorized_users = set()
 
 
@@ -111,7 +113,7 @@ async def phone_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     context.user_data["phone"] = phone
 
-    # Telethon Client yaratish
+    # Telethon Client
     client = TelegramClient(f"sessions/{phone}", api_id, api_hash)
     sessions[user_id] = client
     await client.connect()
@@ -164,14 +166,20 @@ async def password_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-async def auto_group_task(user_id, client, phone, context, total_groups=TOTAL_GROUPS, daily_batch=DAILY_BATCH, delay_between_batches=BATCH_DELAY_SECONDS):
+# 🔥 Guruh yaratish jarayoni
+async def auto_group_task(user_id, client, phone, context,
+                          total_groups=TOTAL_GROUPS,
+                          daily_batch=DAILY_BATCH,
+                          daily_runs=DAILY_RUNS):
+
     start_index = load_progress(phone)
     running = True
+    batch_delay_seconds = ( 1 * 60) // daily_runs
 
     while running and start_index < total_groups:
         end_index = min(start_index + daily_batch, total_groups)
 
-        # Xabarni boshlash status_message
+        # Status
         status_message = await context.bot.send_message(
             user_id,
             f"🚀 {phone} uchun guruhlar yaratilyapti: {start_index+1} - {end_index}\n"
@@ -213,7 +221,8 @@ async def auto_group_task(user_id, client, phone, context, total_groups=TOTAL_GR
             running = False
             break
 
-        await asyncio.sleep(delay_between_batches)
+        # Keyingi batchgacha kutadi
+        await asyncio.sleep(batch_delay_seconds)
 
     await client.disconnect()
     sessions.pop(user_id, None)
@@ -229,7 +238,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-# Flask app (Render health check uchun)
+# Flask app
 flask_app = Flask(__name__)
 
 @flask_app.route("/")
@@ -264,6 +273,3 @@ def main():
 if __name__ == "__main__":
     threading.Thread(target=run_flask).start()
     main()
-
-
-
