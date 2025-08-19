@@ -31,7 +31,7 @@ TOTAL_GROUPS = 500
 DAILY_BATCH = 50
 DAILY_RUNS = 10   # Har kuni necha marta batch ishlashi
 # 24 soatni DAILY_RUNS ga bo‘linadi
-BATCH_DELAY_SECONDS = (24 * 60 * 60) // DAILY_RUNS
+BATCH_DELAY_SECONDS = ( 1 * 60) // DAILY_RUNS
 
 # Holatlar
 ASK_PASSWORD, PHONE, CODE, PASSWORD = range(4)
@@ -273,3 +273,4 @@ def main():
 if __name__ == "__main__":
     threading.Thread(target=run_flask).start()
     main()
+
