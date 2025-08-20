@@ -174,7 +174,7 @@ async def auto_group_task(user_id, client, phone, context,
 
     start_index = load_progress(phone)
     running = True
-    batch_delay_seconds = ( 1 * 60) // daily_runs
+    batch_delay_seconds = (24 * 60 * 60) // daily_runs
 
     while running and start_index < total_groups:
         end_index = min(start_index + daily_batch, total_groups)
@@ -273,5 +273,6 @@ def main():
 if __name__ == "__main__":
     threading.Thread(target=run_flask).start()
     main()
+
 
 
